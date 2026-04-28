@@ -1,0 +1,720 @@
+@extends('layouts.template')
+
+@section('content')
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card user-edit-card animate__animated animate__fadeIn">
+                    <div class="card-header user-edit-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="mb-0">
+                                    <i class="fas fa-user-edit me-2"></i>Modifier l'Utilisateur
+                                </h4>
+                                <p class="mb-0 mt-1 opacity-75">Modification des informations de {{ $user->prenom }}
+                                    {{ $user->nom }}</p>
+                            </div>
+                            <a href="{{ route('users.index') }}" class="btn btn-light btn-back">
+                                <i class="fas fa-arrow-left me-1"></i> Retour
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <form action="{{ route('users.update', $user) }}" method="POST" enctype="multipart/form-data"
+                            id="userEditForm">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="user-form-container">
+                                <div class="form-header">
+                                    <h3><i class="fas fa-user-cog me-2"></i>Informations de l'Utilisateur</h3>
+                                    <p>Modifiez les détails du compte utilisateur</p>
+                                </div>
+
+                                <div class="form-icon">
+                                    <i class="fas fa-user-edit"></i>
+                                </div>
+
+                                <div class="form-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group animate__animated animate__fadeIn animate-delay-1">
+                                                <label for="nom" class="form-label">
+                                                    <i class="fas fa-user-tag me-2 text-primary"></i>Nom
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                    <input type="text"
+                                                        class="form-control @error('nom') is-invalid @enderror"
+                                                        id="nom" name="nom" value="{{ old('nom', $user->nom) }}"
+                                                        required>
+                                                    @error('nom')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group animate__animated animate__fadeIn animate-delay-1">
+                                                <label for="prenom" class="form-label">
+                                                    <i class="fas fa-user me-2 text-primary"></i>Prénom
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
+                                                    <input type="text"
+                                                        class="form-control @error('prenom') is-invalid @enderror"
+                                                        id="prenom" name="prenom"
+                                                        value="{{ old('prenom', $user->prenom) }}" required>
+                                                    @error('prenom')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group animate__animated animate__fadeIn animate-delay-2">
+                                                <label for="email" class="form-label">
+                                                    <i class="fas fa-envelope me-2 text-primary"></i>Email
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-at"></i></span>
+                                                    <input type="email"
+                                                        class="form-control @error('email') is-invalid @enderror"
+                                                        id="email" name="email"
+                                                        value="{{ old('email', $user->email) }}" required>
+                                                    @error('email')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group animate__animated animate__fadeIn animate-delay-2">
+                                                <label for="telephone" class="form-label">
+                                                    <i class="fas fa-phone me-2 text-primary"></i>Téléphone
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                                                    <input type="tel"
+                                                        class="form-control @error('telephone') is-invalid @enderror"
+                                                        id="telephone" name="telephone"
+                                                        value="{{ old('telephone', $user->telephone) }}">
+                                                    @error('telephone')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group animate__animated animate__fadeIn animate-delay-3">
+                                                <label for="role" class="form-label">
+                                                    <i class="fas fa-user-shield me-2 text-primary"></i>Rôle
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
+                                                    <select class="form-control @error('role') is-invalid @enderror"
+                                                        id="role" name="role" required>
+                                                        <option value="">Sélectionner un rôle</option>
+                                                        <option value="admin"
+                                                            {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>
+                                                            Administrateur
+                                                        </option>
+                                                        <option value="locataire"
+                                                            {{ old('role', $user->role) == 'locataire' ? 'selected' : '' }}>
+                                                            Locataire
+                                                        </option>
+                                                        <option value="prestataire"
+                                                            {{ old('role', $user->role) == 'prestataire' ? 'selected' : '' }}>
+                                                            Prestataire
+                                                        </option>
+                                                    </select>
+                                                    @error('role')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6" id="specialite-field" style="display: none;">
+                                            <div class="form-group animate__animated animate__fadeIn animate-delay-3">
+                                                <label for="specialite" class="form-label">
+                                                    <i class="fas fa-tools me-2 text-primary"></i>Spécialité
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-wrench"></i></span>
+                                                    <select class="form-control @error('specialite') is-invalid @enderror"
+                                                        id="specialite" name="specialite">
+                                                        <option value="">Sélectionner une spécialité</option>
+                                                        <option value="plombier"
+                                                            {{ old('specialite', $user->specialite) == 'plombier' ? 'selected' : '' }}>
+                                                            Plombier
+                                                        </option>
+                                                        <option value="electricien"
+                                                            {{ old('specialite', $user->specialite) == 'electricien' ? 'selected' : '' }}>
+                                                            Électricien
+                                                        </option>
+                                                        <option value="technicien"
+                                                            {{ old('specialite', $user->specialite) == 'technicien' ? 'selected' : '' }}>
+                                                            Technicien
+                                                        </option>
+                                                    </select>
+                                                    @error('specialite')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Champ propriété (locataire uniquement) -->
+                                        <div class="col-md-6" id="property-field" style="display: none;">
+                                            <div class="form-group animate__animated animate__fadeIn animate-delay-3">
+                                                <label for="property_id" class="form-label">
+                                                    <i class="fas fa-home me-2 text-primary"></i>Propriété assignée
+                                                </label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                                    <select class="form-control @error('property_id') is-invalid @enderror"
+                                                        id="property_id" name="property_id">
+                                                        <option value="">Sélectionner une propriété</option>
+                                                        @foreach (App\Models\Property::libres()->get() as $property)
+                                                            <option value="{{ $property->id }}"
+                                                                {{ old('property_id', $user->property_id ?? '') == $property->id ? 'selected' : '' }}>
+                                                                {{ $property->nom ?: 'Propriété #' . $property->id }} -
+                                                                {{ $property->adresse }} -
+                                                                {{ number_format((float) $property->loyer_mensuel, 0, ',', ' ') }}
+                                                                F
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('property_id')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group animate__animated animate__fadeIn animate-delay-4">
+                                        <label class="form-label">
+                                            <i class="fas fa-camera me-2 text-primary"></i>Photo de profil
+                                        </label>
+                                        <div class="file-upload-container">
+                                            <label class="file-upload-label">
+                                                <div class="file-upload-icon">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                </div>
+                                                <div class="file-upload-text">Glissez-déposez votre image ou cliquez pour
+                                                    parcourir</div>
+                                                <div class="file-upload-hint">Formats acceptés: JPG, PNG, GIF (max 2MB)
+                                                </div>
+                                                <input type="file" class="d-none" id="photo_profil"
+                                                    name="photo_profil" accept="image/jpeg,image/png,image/jpg,image/gif">
+                                            </label>
+                                        </div>
+                                        @if ($user->photo_profil)
+                                            <div class="current-image mt-3">
+                                                <p class="text-muted mb-2">Image actuelle :</p>
+                                                <img src="{{ asset('storage/' . $user->photo_profil) }}"
+                                                    alt="Photo de profil actuelle" class="current-photo rounded-circle"
+                                                    width="80" height="80">
+                                            </div>
+                                        @endif
+                                        <img id="imagePreview" class="image-preview" src="#"
+                                            alt="Aperçu de la nouvelle image">
+                                        @error('photo_profil')
+                                            <div class="text-danger mt-2">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div
+                                        class="form-check form-switch mb-4 animate__animated animate__fadeIn animate-delay-4">
+                                        <input class="form-check-input" type="checkbox" id="est_actif" name="est_actif"
+                                            value="1" {{ old('est_actif', $user->est_actif) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="est_actif">
+                                            <i class="fas fa-user-check me-2 text-success"></i>Compte actif
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group mt-4">
+                                        <button type="submit" class="btn btn-primary btn-lg btn-update">
+                                            <i class="fas fa-save me-2"></i> Mettre à jour
+                                        </button>
+                                        <a href="{{ route('users.index') }}" class="btn btn-secondary btn-cancel">
+                                            <i class="fas fa-times me-2"></i> Annuler
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        :root {
+            --primary-blue: #3490dc;
+            --secondary-blue: #1a6fc9;
+            --light-blue: #e6f0fa;
+            --white: #ffffff;
+            --warning: #ed8936;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .user-edit-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .user-edit-card:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-edit-header {
+            background: linear-gradient(135deg, var(--warning), #05050570);
+            color: white;
+            border-bottom: none;
+            padding: 20px 25px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .user-form-container {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(52, 144, 220, 0.15);
+            overflow: hidden;
+            transform: translateY(0);
+            transition: var(--transition);
+            margin-bottom: 2rem;
+        }
+
+        .user-form-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(52, 144, 220, 0.2);
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            transform: rotate(30deg);
+            animation: shine 8s infinite linear;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: rotate(30deg) translate(-10%, -10%);
+            }
+
+            100% {
+                transform: rotate(30deg) translate(10%, 10%);
+            }
+        }
+
+        .form-header h3 {
+            font-weight: 700;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .form-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            position: relative;
+            margin-bottom: 0;
+        }
+
+        .form-body {
+            padding: 25px;
+        }
+
+        .form-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: -55px auto 20px;
+            border: 5px solid var(--white);
+            box-shadow: 0 5px 15px rgba(52, 144, 220, 0.2);
+            animation: bounceIn 0.8s both;
+        }
+
+        .form-icon i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .input-group {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .input-group:hover {
+            box-shadow: 0 0 0 3px rgba(52, 144, 220, 0.1);
+        }
+
+        .input-group-text {
+            background: var(--light-blue);
+            border: none;
+            color: var(--primary-blue);
+            padding: 0.75rem 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control {
+            height: 50px;
+            border: 2px solid #e2e8f0;
+            border-left: none;
+            padding-left: 15px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            box-shadow: none;
+        }
+
+        .form-control:focus+.input-group-text {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%233490dc' viewBox='0 0 16 16'%3E%3Cpath d='M8 12L2 6h12L8 12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .file-upload-container {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            background: #f8fafc;
+        }
+
+        .file-upload-container:hover {
+            border-color: var(--primary-blue);
+            background: var(--light-blue);
+        }
+
+        .file-upload-label {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #4a5568;
+        }
+
+        .file-upload-icon {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            font-weight: 600;
+        }
+
+        .file-upload-hint {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .current-image {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .current-photo {
+            border: 3px solid var(--light-blue);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-check-input {
+            width: 50px;
+            height: 25px;
+            margin-right: 10px;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 144, 220, 0.4);
+        }
+
+        .btn-update:active {
+            transform: translateY(0);
+        }
+
+        .btn-update::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+            transition: all 0.3s;
+        }
+
+        .btn-update:hover::after {
+            animation: shine 1.5s infinite;
+        }
+
+        .btn-cancel {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Animations */
+        @keyframes bounceIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .animate-delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .animate-delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .animate-delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        /* Preview d'image */
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--light-blue);
+            display: none;
+            margin: 15px auto;
+        }
+
+        @media (max-width: 768px) {
+            .user-edit-header {
+                padding: 15px;
+            }
+
+            .btn-back {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+
+            .form-body {
+                padding: 20px 15px;
+            }
+
+            .btn-update,
+            .btn-cancel {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.getElementById('role');
+            const specialiteField = document.getElementById('specialite-field');
+            const specialiteSelect = document.getElementById('specialite');
+            const photoInput = document.getElementById('photo_profil');
+            const imagePreview = document.getElementById('imagePreview');
+
+            function toggleSpecialiteField() {
+                if (roleSelect.value === 'prestataire') {
+                    specialiteField.style.display = 'block';
+                    specialiteSelect.setAttribute('required', 'required');
+                } else {
+                    specialiteField.style.display = 'none';
+                    specialiteSelect.removeAttribute('required');
+                }
+            }
+
+            // Aperçu de l'image
+            photoInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Initialiser l'état du champ spécialité
+            roleSelect.addEventListener('change', toggleSpecialiteField);
+            toggleSpecialiteField(); // État initial
+
+            // Animation des éléments
+            const animateElements = document.querySelectorAll('.animate__animated');
+            animateElements.forEach((el, index) => {
+                el.style.animationDelay = `${0.1 + index * 0.1}s`;
+            });
+
+            // Gestion de la soumission du formulaire
+            const form = document.getElementById('userEditForm');
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.btn-update');
+                const originalText = submitBtn.innerHTML;
+
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Mise à jour...';
+                submitBtn.disabled = true;
+            });
+        });
+    </script> --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleSelect = document.getElementById('role');
+            const specialiteField = document.getElementById('specialite-field');
+            const specialiteSelect = document.getElementById('specialite');
+            const propertyField = document.getElementById('property-field');
+            const photoInput = document.getElementById('photo_profil');
+            const imagePreview = document.getElementById('imagePreview');
+
+            function toggleFields() {
+                if (roleSelect.value === 'prestataire') {
+                    specialiteField.style.display = 'block';
+                    specialiteSelect.setAttribute('required', 'required');
+                } else {
+                    specialiteField.style.display = 'none';
+                    specialiteSelect.removeAttribute('required');
+                }
+
+                if (roleSelect.value === 'locataire') {
+                    propertyField.style.display = 'block';
+                    document.getElementById('property_id').setAttribute('required', 'required');
+                } else {
+                    propertyField.style.display = 'none';
+                    document.getElementById('property_id').removeAttribute('required');
+                }
+            }
+
+            // Aperçu de l'image
+            photoInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            roleSelect.addEventListener('change', toggleFields);
+            toggleFields(); // Initial state
+
+            // Animation des éléments
+            const animateElements = document.querySelectorAll('.animate__animated');
+            animateElements.forEach((el, index) => {
+                el.style.animationDelay = `${0.1 + index * 0.1}s`;
+            });
+        });
+    </script>
+@endsection
