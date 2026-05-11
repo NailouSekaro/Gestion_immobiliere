@@ -14,15 +14,26 @@ class ContractController extends Controller
 {
     public function index()
     {
-        $contracts = Contract::with(['user', 'property'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $user = auth()->user();
+
+        $contractsQuery = Contract::with(['user', 'property'])
+            ->orderBy('created_at', 'desc');
+
+        if ($user->isLocataire()) {
+            $contractsQuery->where('user_id', $user->id);
+        } elseif (!$user->isAdmin()) {
+            abort(403);
+        }
+
+        $contracts = $contractsQuery->paginate(20);
 
         return view('admin.contracts.index', compact('contracts'));
     }
 
     public function create()
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $locataires = User::where('role', 'locataire')
             ->whereHas('property')
             ->with('property')
@@ -35,6 +46,8 @@ class ContractController extends Controller
 
     public function store(Request $request)
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'property_id' => 'required|exists:properties,id',
@@ -45,6 +58,13 @@ class ContractController extends Controller
             'termes' => 'nullable|string',
             'clauses_speciales' => 'nullable|array'
         ]);
+
+        $locataire = User::findOrFail($request->user_id);
+        if ((int) $locataire->property_id !== (int) $request->property_id) {
+            return back()
+                ->withErrors(['property_id' => 'Le contrat doit correspondre à la chambre actuellement assignée au locataire.'])
+                ->withInput();
+        }
 
         // Vérifier que le locataire n'a pas déjà un contrat actif pour cette propriété
         $existingContract = Contract::where('user_id', $request->user_id)
@@ -76,12 +96,16 @@ class ContractController extends Controller
 
     public function show(Contract $contract)
     {
+        $this->authorizeContractAccess($contract);
+
         $contract->load(['user', 'property']);
         return view('admin.contracts.show', compact('contract'));
     }
 
     public function edit(Contract $contract)
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $locataires = User::where('role', 'locataire')->get();
         $properties = Property::all();
 
@@ -90,6 +114,8 @@ class ContractController extends Controller
 
     public function update(Request $request, Contract $contract)
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $request->validate([
             'date_debut' => 'required|date',
             'duree_mois' => 'required|integer|min:1|max:36',
@@ -118,6 +144,8 @@ class ContractController extends Controller
 
     public function destroy(Contract $contract)
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         // Supprimer le fichier PDF
         if ($contract->fichier_pdf) {
             Storage::disk('public')->delete($contract->fichier_pdf);
@@ -131,6 +159,8 @@ class ContractController extends Controller
 
     public function download(Contract $contract)
     {
+        $this->authorizeContractAccess($contract);
+
         if (!$contract->fichier_pdf || !Storage::disk('public')->exists($contract->fichier_pdf)) {
             // Regénérer le PDF s'il n'existe pas
             $contract->genererPdf();
@@ -142,12 +172,16 @@ class ContractController extends Controller
 
     public function generatePdf(Contract $contract)
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $contract->genererPdf();
         return back()->with('success', 'PDF regénéré avec succès.');
     }
 
     public function preview(Contract $contract)
     {
+        $this->authorizeContractAccess($contract);
+
         $contract->load(['user', 'property']);
 
         $pdf = Pdf::loadView('admin.contracts.templates.default', compact('contract'));
@@ -157,6 +191,8 @@ class ContractController extends Controller
 
     public function sign(Contract $contract)
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $contract->update([
             'date_signature' => now(),
             'statut' => 'actif'
@@ -167,6 +203,8 @@ class ContractController extends Controller
 
     public function terminate(Contract $contract)
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $contract->update([
             'date_resiliation' => now(),
             'statut' => 'resilie'
@@ -176,5 +214,16 @@ class ContractController extends Controller
         $contract->property->update(['statut' => 'libre']);
 
         return back()->with('success', 'Contrat résilié avec succès.');
+    }
+
+    private function authorizeContractAccess(Contract $contract): void
+    {
+        $user = auth()->user();
+
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        abort_unless($user->isLocataire() && $contract->user_id === $user->id, 403);
     }
 }

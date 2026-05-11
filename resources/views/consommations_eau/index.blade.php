@@ -665,7 +665,9 @@
                 <h1 class="page-title">
                     <i class="fas fa-tint"></i>Consommations d'Eau
                 </h1>
-                <p class="page-subtitle">Suivez et gérez les consommations d'eau des locataires</p>
+                <p class="page-subtitle">
+                    {{ auth()->user()->isAdmin() ? "Suivez et gérez les consommations d'eau des locataires" : "Consultez vos consommations et factures d'eau" }}
+                </p>
             </div>
 
             <!-- Cartes de statistiques -->
@@ -707,8 +709,8 @@
             <div class="filter-section">
                 <select class="filter-select" id="statusFilter">
                     <option value="">Tous les statuts</option>
-                    <option value="payé">Payé</option>
-                    <option value="impayé">Impayé</option>
+                    <option value="paye">Payé</option>
+                    <option value="non_paye">Impayé</option>
                 </select>
 
                 <select class="filter-select" id="monthFilter">
@@ -734,16 +736,18 @@
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Rechercher un locataire...">
                 </div>
-                <a href="{{ route('consommations-eau.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Nouvelle Consommation
-                </a>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('consommations-eau.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Nouvelle Consommation
+                    </a>
+                @endif
             </div>
 
             <!-- Tableau -->
             <div class="table-container">
                 <div class="table-header">
                     <h4 class="table-title">
-                        <i class="fas fa-list"></i>Liste des Consommations
+                        <i class="fas fa-list"></i>{{ auth()->user()->isAdmin() ? 'Liste des Consommations' : 'Mes Consommations' }}
                     </h4>
                 </div>
 
@@ -860,10 +864,14 @@
                                         <div class="empty-state">
                                             <i class="fas fa-tint"></i>
                                             <h4>Aucune consommation enregistrée</h4>
-                                            <p>Commencez par enregistrer une consommation d'eau pour un locataire</p>
-                                            <a href="{{ route('consommations-eau.create') }}" class="btn btn-primary">
-                                                <i class="fas fa-plus me-2"></i>Enregistrer une consommation
-                                            </a>
+                                            <p>
+                                                {{ auth()->user()->isAdmin() ? "Commencez par enregistrer une consommation d'eau pour un locataire" : "Aucune consommation d'eau n'est encore disponible pour votre compte" }}
+                                            </p>
+                                            @if (auth()->user()->isAdmin())
+                                                <a href="{{ route('consommations-eau.create') }}" class="btn btn-primary">
+                                                    <i class="fas fa-plus me-2"></i>Enregistrer une consommation
+                                                </a>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

@@ -8,11 +8,13 @@
                 <div class="card-header bg-primary text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">
-                            <i class="fas fa-file-contract me-2"></i>Gestion des Contrats
+                            <i class="fas fa-file-contract me-2"></i>{{ auth()->user()->isAdmin() ? 'Gestion des Contrats' : 'Mes Contrats' }}
                         </h4>
-                        <a href="{{ route('contracts.create') }}" class="btn btn-light">
-                            <i class="fas fa-plus me-1"></i> Nouveau Contrat
-                        </a>
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('contracts.create') }}" class="btn btn-light">
+                                <i class="fas fa-plus me-1"></i> Nouveau Contrat
+                            </a>
+                        @endif
                     </div>
                 </div>
 
@@ -105,7 +107,7 @@
                                             <a href="{{ route('contracts.preview', $contract) }}" class="btn btn-secondary btn-sm" title="Aperçu" target="_blank">
                                                 <i class="fas fa-file-pdf"></i>
                                             </a>
-                                            @if($contract->statut === 'actif')
+                                            @if(auth()->user()->isAdmin() && $contract->statut === 'actif')
                                             <form action="{{ route('contracts.terminate', $contract) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-warning btn-sm" title="Résilier"
@@ -114,14 +116,16 @@
                                                 </button>
                                             </form>
                                             @endif
-                                            <form action="{{ route('contracts.destroy', $contract) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Supprimer"
-                                                        onclick="return confirm('Supprimer ce contrat?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            @if(auth()->user()->isAdmin())
+                                                <form action="{{ route('contracts.destroy', $contract) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Supprimer"
+                                                            onclick="return confirm('Supprimer ce contrat?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -129,10 +133,12 @@
                                 <tr>
                                     <td colspan="7" class="text-center text-muted py-4">
                                         <i class="fas fa-file-contract fa-3x mb-3"></i>
-                                        <p>Aucun contrat enregistré</p>
-                                        <a href="{{ route('contracts.create') }}" class="btn btn-primary">
-                                            <i class="fas fa-plus me-1"></i> Créer un contrat
-                                        </a>
+                                        <p>{{ auth()->user()->isAdmin() ? 'Aucun contrat enregistré' : "Aucun contrat n'est encore disponible dans votre espace" }}</p>
+                                        @if(auth()->user()->isAdmin())
+                                            <a href="{{ route('contracts.create') }}" class="btn btn-primary">
+                                                <i class="fas fa-plus me-1"></i> Créer un contrat
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforelse

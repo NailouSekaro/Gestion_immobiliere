@@ -7,6 +7,7 @@
             ['label' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'icon-speedometer'],
             ['label' => 'Paiement FedaPay', 'route' => 'paiements.fedapay.page', 'icon' => 'icon-credit-card'],
             ['label' => 'Mes paiements', 'route' => 'paiements.index', 'icon' => 'icon-wallet'],
+            ['label' => 'Mon contrat', 'route' => 'contracts.index', 'icon' => 'icon-docs'],
             ['label' => 'Factures d eau', 'route' => 'consommations-eau.index', 'icon' => 'icon-drop'],
             ['label' => 'Messagerie', 'route' => 'chat.index', 'icon' => 'icon-bubbles'],
             ['label' => 'Profil', 'route' => 'profile.edit', 'icon' => 'icon-user'],
@@ -36,7 +37,7 @@
 <div class="wrapper role-layout-shell">
     <header class="main-header-top hidden-print">
         <a href="{{ route('dashboard') }}" class="logo">
-            <img class="img-fluid able-logo" src="{{ asset('assets/images/logo.png') }}" alt="Logo">
+            <img class="img-fluid able-logo" src="{{ asset('assets/images/loyer-logo.svg') }}" alt="Gestion Loyer">
         </a>
 
         <nav class="navbar navbar-static-top">
@@ -58,15 +59,15 @@
                         </a>
                     </li>
 
-                    <li class="dropdown">
+                    <li class="dropdown role-user-menu">
                         <a href="#!" data-toggle="dropdown" role="button" aria-haspopup="true"
-                            aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image">
-                            <span>
-                                <img class="img-circle"
+                            aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image role-user-toggle">
+                            <span class="role-user-avatar-wrap">
+                                <img class="img-circle role-user-avatar"
                                     src="{{ $user->photo_profil ? asset('storage/' . $user->photo_profil) : asset('assets/images/faces/default-avatar.jpg') }}"
                                     width="40" height="40" alt="Photo de profil">
                             </span>
-                            <span>{{ $user->nom }} <b>{{ $user->prenom }}</b> <i class="icofont icofont-simple-down"></i></span>
+                            <span class="role-user-name">{{ $user->nom }} <b>{{ $user->prenom }}</b> <i class="icofont icofont-simple-down"></i></span>
                         </a>
                         <ul class="dropdown-menu settings-menu">
                             <li><a href="{{ route('profile.edit') }}"><i class="icon-user"></i> Profil</a></li>
@@ -99,8 +100,7 @@
     </aside>
 </div>
 
-@push('styles')
-    <style>
+<style>
         .role-layout-shell .navbar-custom-menu .top-nav > li > a,
         .role-layout-shell .top-nav.lft-nav a {
             display: flex;
@@ -139,5 +139,54 @@
             align-items: center;
             gap: 8px;
         }
-    </style>
-@endpush
+
+        .role-user-menu {
+            position: relative;
+        }
+
+        .role-user-toggle {
+            width: auto !important;
+            height: 50px;
+            min-width: 0;
+            max-width: 260px;
+            overflow: visible;
+            gap: 8px;
+            padding: 0 14px;
+            border-radius: 0;
+            line-height: normal;
+            white-space: nowrap;
+        }
+
+        .role-user-avatar-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex: 0 0 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .role-user-avatar {
+            width: 36px !important;
+            height: 36px !important;
+            object-fit: cover;
+            display: block;
+        }
+
+        .role-user-name {
+            min-width: 0;
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            line-height: 1.2;
+        }
+
+        .role-user-menu .settings-menu {
+            right: 0;
+            left: auto;
+        }
+</style>

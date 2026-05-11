@@ -888,7 +888,7 @@
                                 </span>
                                 <div>
                                     <p class="mb-2">Cette consommation n'a pas encore été payée.</p>
-                                    @if (!$consommationEau->paiementEau)
+                                    @if (!$consommationEau->paiementEau && auth()->user()->isAdmin())
                                         <form method="POST"
                                             action="{{ route('paiements-eau.store', ['consommationEau' => $consommationEau->id]) }}">
                                             @csrf

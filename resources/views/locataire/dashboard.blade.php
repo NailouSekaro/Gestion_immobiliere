@@ -460,18 +460,7 @@
         </style>
     </head>
 
-    <body class="sidebar-mini fixed">
-        @include('layouts.role-navigation')
-        <div class="loader-bg">
-            <div class="loader-bar">
-            </div>
-        </div>
-        <!-- Sidebar chat start -->
-        @include('layouts.sidebar-clean')
-        <!-- Sidebar chat end-->
-        <div class="content-wrapper">
-            <!-- Container-fluid starts -->
-            <!-- Main content starts -->
+    <body>
             <div class="container-fluid">
                 <div class="tenant-dashboard-container">
                     <!-- En-tête -->
@@ -729,31 +718,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Required Jqurey -->
-        <script src="{{ asset('assets/plugins/Jquery/dist/jquery.min.js') }}"></script>
-        <script src="{{ asset('assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
-        <script src="{{ asset('assets/plugins/tether/dist/js/tether.min.js') }}"></script>
-
-        <!-- Required Fremwork -->
-        <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
-
-        <!-- Scrollbar JS-->
-        <script src="{{ asset('assets/plugins/jquery-slimscroll/jquery.slimscroll.js') }}"></script>
-        <script src="{{ asset('assets/plugins/jquery.nicescroll/jquery.nicescroll.min.js') }}"></script>
-
-        <!-- Classic JS -->
-        <script src="{{ asset('assets/plugins/classie/classie.js') }}"></script>
-
-        <!-- Notification -->
-        <script src="{{ asset('assets/plugins/notification/js/bootstrap-growl.min.js') }}"></script>
-
-        <!-- Custom JS -->
-        <script type="text/javascript" src="{{ asset('assets/js/main.min.js') }}"></script>
-        <script src="assets/js/menu.min.js"></script>
-
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 // Animation des cartes

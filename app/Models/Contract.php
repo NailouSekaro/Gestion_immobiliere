@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class Contract extends Model
 {
@@ -85,6 +86,35 @@ class Contract extends Model
     public function scopePourLocataire($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    public static function createForAssignment(User $user, Property $property): self
+    {
+        $dateDebut = now()->startOfDay();
+        $dureeMois = 12;
+
+        $contract = static::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'property_id' => $property->id,
+                'statut' => 'actif',
+            ],
+            [
+                'date_debut' => $dateDebut,
+                'date_fin' => Carbon::parse($dateDebut)->addMonths($dureeMois)->subDay(),
+                'duree_mois' => $dureeMois,
+                'loyer_mensuel' => $property->loyer_mensuel ?? 0,
+                'caution' => $property->caution ?? 0,
+                'devise' => $property->devise ?? 'XAF',
+                'termes' => "Contrat etabli automatiquement apres assignation de la chambre au locataire.",
+            ]
+        );
+
+        if (!$contract->fichier_pdf) {
+            $contract->genererPdf();
+        }
+
+        return $contract;
     }
 
     // Méthodes utilitaires

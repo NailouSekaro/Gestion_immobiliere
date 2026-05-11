@@ -249,10 +249,27 @@
         });
 
 
-        themeToggle.addEventListener('click', () => {
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
                 themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
             });
+        }
+
+        document.addEventListener('click', function(event) {
+            const toggle = event.target.closest('.role-user-toggle, .topbar-user-toggle');
+            document.querySelectorAll('.role-user-menu.open, .topbar-user-menu.open').forEach(function(menu) {
+                if (!menu.contains(event.target)) {
+                    menu.classList.remove('open');
+                }
+            });
+
+            if (toggle && !window.jQuery?.fn?.dropdown) {
+                event.preventDefault();
+                toggle.closest('.role-user-menu, .topbar-user-menu')?.classList.toggle('open');
+            }
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')

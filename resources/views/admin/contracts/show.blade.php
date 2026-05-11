@@ -116,7 +116,7 @@
                                 <a href="{{ route('contracts.preview', $contract) }}" class="btn btn-secondary" target="_blank">
                                     <i class="fas fa-eye me-1"></i> Aperçu
                                 </a>
-                                @if(!$contract->date_signature)
+                                @if(auth()->user()->isAdmin() && !$contract->date_signature)
                                 <form action="{{ route('contracts.sign', $contract) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-success">
@@ -124,7 +124,7 @@
                                     </button>
                                 </form>
                                 @endif
-                                @if($contract->statut === 'actif')
+                                @if(auth()->user()->isAdmin() && $contract->statut === 'actif')
                                 <form action="{{ route('contracts.terminate', $contract) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-warning"

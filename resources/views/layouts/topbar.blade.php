@@ -3,7 +3,7 @@
     <!-- Navbar-->
     <header class="main-header-top hidden-print">
         <a href="{{ route('dashboard') }}" class="logo"><img class="img-fluid able-logo"
-                src="{{ asset('assets/images/logo.png') }}" alt="Theme-logo"></a>
+                src="{{ asset('assets/images/loyer-logo.svg') }}" alt="Gestion Loyer"></a>
 
         <nav class="navbar navbar-static-top">
             <!-- Sidebar toggle button-->
@@ -139,16 +139,15 @@
 
                     </li>
                     <!-- User Menu-->
-                    <li class="dropdown">
+                    <li class="dropdown topbar-user-menu">
                         <a href="#!" data-toggle="dropdown" role="button" aria-haspopup="true"
-                            aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image">
-                            <span><img class="img-circle "
+                            aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image topbar-user-toggle">
+                            <span class="topbar-user-avatar-wrap"><img class="img-circle topbar-user-avatar"
                                     src="{{ Auth::user()->photo_profil
                                         ? asset('storage/' . Auth::user()->photo_profil)
                                         : asset('assets/images/faces/default-avatar.jpg') }}"
-                                    class="rounded-circle" width="40" height="40" alt="Photo de profil"
-                                    style="width:40px;" alt="User Image"></span>
-                            <span>{{ Auth::user()->nom }} <b>{{ Auth::user()->prenom }}</b> <i
+                                    width="40" height="40" alt="Photo de profil"></span>
+                            <span class="topbar-user-name">{{ Auth::user()->nom }} <b>{{ Auth::user()->prenom }}</b> <i
                                     class=" icofont icofont-simple-down"></i></span>
                         </a>
                         <ul class="dropdown-menu settings-menu">
@@ -513,3 +512,58 @@
             });
         </script> --}}
     </aside>
+
+    <style>
+        .topbar-user-menu {
+            position: relative;
+        }
+
+        .main-header-top .top-nav > li.topbar-user-menu > a.topbar-user-toggle {
+            width: auto !important;
+            height: 50px;
+            max-width: 260px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            padding: 0 14px;
+            border-radius: 0;
+            line-height: normal;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .topbar-user-avatar-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex: 0 0 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar-user-avatar {
+            width: 36px !important;
+            height: 36px !important;
+            object-fit: cover;
+            display: block;
+        }
+
+        .topbar-user-name {
+            min-width: 0;
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            line-height: 1.2;
+        }
+
+        .topbar-user-menu .settings-menu {
+            right: 0;
+            left: auto;
+        }
+    </style>

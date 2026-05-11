@@ -39,6 +39,8 @@ class PaiementEauController extends Controller
 
     public function store(Request $request, ConsommationEau $consommationEau)
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $request->validate([
             'montant_paye' => 'required|numeric|min:0',
             'methode' => 'required|string',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use App\Models\User;
+use App\Models\Contract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -128,21 +129,30 @@ class PropertyController extends Controller
             return back()->withErrors(['property' => 'Cette propriété n\'est pas disponible.']);
         }
 
-        DB::transaction(function () use ($user, $property) {
+        $contract = DB::transaction(function () use ($user, $property) {
         // Libérer l'ancienne propriété si existante
         if ($user->property_id) {
             $ancienneProperty = Property::find($user->property_id);
+            Contract::where('user_id', $user->id)
+                ->where('property_id', $ancienneProperty?->id)
+                ->where('statut', 'actif')
+                ->update([
+                    'statut' => 'resilie',
+                    'date_resiliation' => now(),
+                ]);
             $user->update(['property_id' => null]);
-            $ancienneProperty->updateStatut(); // ← Mettre à jour le statut
+            $ancienneProperty?->updateStatut(); // ← Mettre à jour le statut
         }
 
         // Assigner la nouvelle propriété
         $user->update(['property_id' => $property->id]);
         $property->updateStatut(); // ← Mettre à jour le statut
+
+        return Contract::createForAssignment($user, $property);
     });
 
-    return redirect()->route('properties.show', $property)
-        ->with('success', 'Locataire assigné avec succès.');
+    return redirect()->route('contracts.show', $contract)
+        ->with('success', 'Locataire assigné avec succès. Le contrat a été établi automatiquement.');
 
     }
 
@@ -155,7 +165,19 @@ class PropertyController extends Controller
 
         DB::transaction(function () use ($property) {
             // Libérer le locataire
-            $property->locataireActuel->update(['property_id' => null]);
+            $locataire = $property->locataireActuel;
+
+            if ($locataire) {
+                Contract::where('user_id', $locataire->id)
+                    ->where('property_id', $property->id)
+                    ->where('statut', 'actif')
+                    ->update([
+                        'statut' => 'resilie',
+                        'date_resiliation' => now(),
+                    ]);
+
+                $locataire->update(['property_id' => null]);
+            }
 
             // Libérer la propriété
             $property->update(['statut' => 'libre']);

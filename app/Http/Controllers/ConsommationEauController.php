@@ -18,6 +18,8 @@ class ConsommationEauController extends Controller {
 
     public function create()
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $users = User::whereNotNull('property_id')
             ->with([
                 'property',
@@ -63,13 +65,21 @@ class ConsommationEauController extends Controller {
     // }
 
     public function index() {
-        $consommations = ConsommationEau::with( [
+        $user = auth()->user();
+
+        $query = ConsommationEau::with( [
             'user',
             'property',
             'paiementEau'
-        ] )
-        ->orderBy( 'periode_fin', 'desc' )
-        ->get();
+        ] );
+
+        if ( $user->isLocataire() ) {
+            $query->where( 'user_id', $user->id );
+        } elseif ( !$user->isAdmin() ) {
+            abort( 403 );
+        }
+
+        $consommations = $query->orderBy( 'periode_fin', 'desc' )->get();
 
         // Calcul des statistiques
         $totalConsumption = $consommations->sum( 'consommation' );
@@ -91,6 +101,8 @@ class ConsommationEauController extends Controller {
     }
 
     public function store( Request $request ) {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
         $request->validate( [
             'user_id' => 'required|exists:users,id',
             'index_compteur' => 'required|numeric|min:0',
@@ -134,6 +146,8 @@ class ConsommationEauController extends Controller {
     }
 
     public function facture( ConsommationEau $consommationEau ) {
+        $this->authorizeConsommationAccess( $consommationEau );
+
         $pdf = PDF::loadView(
             'consommations_eau.facture',
             compact( 'consommationEau' )
@@ -169,6 +183,8 @@ class ConsommationEauController extends Controller {
     // }
 
     public function show( ConsommationEau $consommationEau ) {
+        $this->authorizeConsommationAccess( $consommationEau );
+
         $consommationEau->load( [
             'user',
             'property',
@@ -183,5 +199,15 @@ class ConsommationEauController extends Controller {
         return view( 'consommations_eau.show', compact( 'consommationEau' ) );
     }
 
-}
+    private function authorizeConsommationAccess( ConsommationEau $consommationEau ): void
+    {
+        $user = auth()->user();
 
+        if ( $user->isAdmin() ) {
+            return;
+        }
+
+        abort_unless( $user->isLocataire() && $consommationEau->user_id === $user->id, 403 );
+    }
+
+}
